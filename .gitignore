@@ -125,6 +125,8 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+.DS_Store
+
 # yarn v3
 .pnp.*
 .yarn/*
@@ -137,3 +139,13 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Local photo binaries (site loads from Cloudinary)
+images/full/*.jpg
+images/full/*.jpeg
+images/full/*.png
+images/full/*.webp
+images/thumbs/*.jpg
+images/thumbs/*.jpeg
+images/thumbs/*.png
+images/thumbs/*.webp

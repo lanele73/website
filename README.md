@@ -1,82 +1,58 @@
 # Photography Portfolio Website
 
-A simple, elegant photography portfolio website designed for GitHub Pages. Features high-quality image rendering and mobile-responsive design.
+A simple, elegant photography portfolio designed for GitHub Pages. Images are delivered from [Cloudinary](https://cloudinary.com/) so the repository stays small; the gallery is driven by `photos.js` and `script.js`.
 
-## 🚀 Quick Start
+## Quick start
 
-### 1. Add Your Photos
+### 1. Cloudinary
 
-Export your photos from Lightroom and add them to the `images` folder:
-- **Full-size images**: `images/full/` 
-- **Thumbnails**: `images/thumbs/`
+1. Create a [Cloudinary](https://cloudinary.com/) account if you have not already.
+2. In the dashboard, copy your **cloud name** (not the API secret).
+3. Open [photos.js](photos.js) and set `CLOUDINARY_CLOUD_NAME` to that value.
 
-### 2. Update the Gallery
+You do **not** need an API key or secret for the public site: delivery URLs only use the cloud name and each image’s **public ID**. Use the API key and secret only for uploads or server-side tools, and never commit the secret to this repo.
 
-Edit `index.html` and add/modify gallery items:
+### 2. Upload photos
 
-```html
-<div class="gallery-item" data-src="images/full/your-photo.jpg">
-    <img src="images/thumbs/your-photo.jpg" alt="Description" loading="lazy">
-</div>
+Upload your images to the Cloudinary Media Library. Use a single folder (for example `fotos`) so each asset’s public ID looks like `fotos/your-image-name`. The entries in `photos.js` must match those public IDs exactly (including any file extension if Cloudinary stored one).
+
+### 3. Configure the gallery
+
+Edit [photos.js](photos.js): adjust the `photos` array (`publicId` and `title`). Order in the array is the order on the page.
+
+Thumbnail and lightbox sizes use Cloudinary transformations in [script.js](script.js) (`CLOUDINARY_THUMB_TRANSFORMS` and `CLOUDINARY_FULL_TRANSFORMS`).
+
+### List many photos at once (optional)
+
+To dump `publicId` lines for [photos.js](photos.js) using the Admin API (local only — **never** commit API secrets):
+
+1. Copy [.env.example](.env.example) to `.env` and set `CLOUDINARY_URL` (Dashboard → API Keys → “API environment variable”).
+2. `npm install`
+3. Run one of:
+
+```bash
+npm run list-cloudinary -- --prefix fotos/
+npm run list-cloudinary -- --all
+npm run list-cloudinary -- --prefix fotos/ --urls
+npm run list-cloudinary -- --prefix fotos/ --json
 ```
 
-### 3. Deploy to GitHub Pages
+`--urls` prints thumbnail delivery URLs (same transform chain as the site). Review generated titles; `--no-strip-suffix` keeps Cloudinary’s random suffix in the title hint.
 
-1. Push your code to GitHub
-2. Go to repository Settings → Pages
-3. Select "main" branch as source
-4. Your site will be live at `https://yourusername.github.io/repository-name`
+### 4. Deploy to GitHub Pages
 
-## 📸 Lightroom Export Settings (Recommended)
+1. Push your code to GitHub.
+2. Repository **Settings** → **Pages**.
+3. Choose the `main` branch as the source.
+4. The site will be available at `https://yourusername.github.io/repository-name`.
 
-### For Full-Size Images (`images/full/`)
+## Optional: preparing files before upload
 
-**File Settings:**
-- Format: JPEG
-- Quality: 90-95
-- Color Space: sRGB
-- Limit File Size: Optional (2-4 MB for web)
+If you export from Lightroom first, then upload the exports to Cloudinary, sensible defaults are JPEG, sRGB, long edge around 2400–3000px for originals, and metadata stripped for privacy if you prefer. Cloudinary applies format and quality automation in the delivery URLs (`f_auto`, `q_auto`).
 
-**Image Sizing:**
-- Resize to Fit: Long Edge
-- Dimension: 2400-3000 pixels
-- Resolution: 72 ppi (web standard)
+## Customization
 
-**Output Sharpening:**
-- Sharpen For: Screen
-- Amount: Standard
-
-**Metadata:**
-- Remove location info (for privacy)
-- Include copyright (optional)
-
-### For Thumbnails (`images/thumbs/`)
-
-**File Settings:**
-- Format: JPEG
-- Quality: 85
-- Color Space: sRGB
-
-**Image Sizing:**
-- Resize to Fit: Long Edge
-- Dimension: 800 pixels
-- Resolution: 72 ppi
-
-**Output Sharpening:**
-- Sharpen For: Screen
-- Amount: Standard
-
-### Alternative: Automated Lightroom Export
-
-You can create two export presets in Lightroom:
-1. **"Web - Full Size"** with the full-size settings above
-2. **"Web - Thumbnails"** with the thumbnail settings above
-
-Then export each photo twice using these presets.
-
-## 🎨 Customization
-
-### Change Colors
+### Colors
 
 Edit the CSS variables in `style.css`:
 
@@ -89,9 +65,9 @@ Edit the CSS variables in `style.css`:
 }
 ```
 
-### Change Grid Layout
+### Grid layout
 
-Modify the grid in `style.css`:
+In `style.css`:
 
 ```css
 .gallery {
@@ -100,83 +76,34 @@ Modify the grid in `style.css`:
 }
 ```
 
-### Update Site Title
+### Site title
 
-Edit `index.html`:
+Edit `index.html` (for example the `<h1>` in the header).
 
-```html
-<header>
-    <h1>Your Name</h1>
-    <p class="subtitle">Photographer</p>
-</header>
-```
+## Features
 
-## ✨ Features
+- Responsive grid, lightbox, keyboard and touch navigation, lazy loading
+- No runtime npm deps for the gallery: plain HTML, CSS, and JavaScript
+- Thumbnails and large views generated on the fly via Cloudinary URLs
 
-- **Responsive Grid**: Automatically adjusts to screen size
-- **Lightbox Gallery**: Click any image to view full-size
-- **Keyboard Navigation**: Use arrow keys to navigate, ESC to close
-- **Touch Support**: Swipe to navigate on mobile devices
-- **Lazy Loading**: Images load as you scroll for better performance
-- **High-Quality Rendering**: Optimized for crisp, clear photos
-- **No Dependencies**: Pure HTML, CSS, and JavaScript
-
-## 📱 Mobile-Friendly
-
-The site is fully responsive and optimized for:
-- Desktop browsers
-- Tablets
-- Mobile phones
-- Touch interfaces
-
-## 🌐 Browser Support
-
-Works on all modern browsers:
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Mobile browsers
-
-## 📁 Project Structure
+## Project structure
 
 ```
 website/
-├── index.html          # Main HTML file
-├── style.css           # All styles
-├── script.js           # Gallery functionality
+├── index.html
+├── style.css
+├── script.js              # Gallery + Cloudinary URL helpers
+├── photos.js              # Cloud name + photo list (publicId, title)
+├── scripts/
+│   └── list-cloudinary-photos.mjs   # npm run list-cloudinary (needs .env)
+├── package.json
+├── .env.example
 ├── images/
-│   ├── full/          # Full-resolution images
-│   └── thumbs/        # Thumbnail images
-└── README.md          # This file
+│   ├── full/
+│   └── thumbs/
+└── README.md
 ```
 
-## 💡 Tips
+## License
 
-1. **Keep file sizes reasonable**: 2-4 MB for full images, under 200 KB for thumbs
-2. **Use consistent naming**: photo1.jpg, photo2.jpg, etc.
-3. **Maintain aspect ratios**: The grid looks best with similar aspect ratios
-4. **Test on mobile**: Always check how your site looks on phone screens
-5. **Use descriptive alt text**: Good for accessibility and SEO
-
-## 🔧 Advanced: Image Optimization Script
-
-For batch processing, you can use ImageMagick to create thumbnails:
-
-```bash
-# Install ImageMagick (macOS)
-brew install imagemagick
-
-# Create thumbnails from full-size images
-cd images/full
-for img in *.jpg; do
-    convert "$img" -resize 800x800\> -quality 85 ../thumbs/"$img"
-done
-```
-
-## 📄 License
-
-Free to use for your personal portfolio. Modify as needed!
-
----
-
-**Need help?** The code is simple and well-commented. Check the individual files for more details.
+Free to use for your personal portfolio. Modify as needed.
