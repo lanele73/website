@@ -1,3 +1,129 @@
+const CLOUDINARY_THUMB_TRANSFORMS = 'f_auto,q_auto,w_1200,h_1400,c_limit';
+const CLOUDINARY_FULL_TRANSFORMS = 'f_auto,q_auto,w_2200,h_1600,c_limit';
+const PATCHWORK_MIN_ASPECT_RATIO = 0.95;
+const PATCHWORK_MAX_ASPECT_RATIO = 1.8;
+const PATCHWORK_MIN_ROW_SPAN = 12;
+const PATCHWORK_MAX_ROW_SPAN = 32;
+
+function buildCloudinaryUrl(publicId, transforms) {
+    const encodedPublicId = publicId
+        .split('/')
+        .map(segment => encodeURIComponent(segment))
+        .join('/');
+
+    return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transforms}/${encodedPublicId}`;
+}
+
+function renderGallery() {
+    const gallery = document.getElementById('gallery');
+
+    if (!gallery) {
+        return;
+    }
+
+    if (!Array.isArray(photos) || photos.length === 0) {
+        gallery.innerHTML = '<p>No photos configured yet.</p>';
+        return;
+    }
+
+    gallery.innerHTML = photos.map(({ publicId, title }) => {
+        const thumbnailSrc = buildCloudinaryUrl(publicId, CLOUDINARY_THUMB_TRANSFORMS);
+        const fullImageSrc = buildCloudinaryUrl(publicId, CLOUDINARY_FULL_TRANSFORMS);
+        const safeTitle = title ?? '';
+
+        return `
+            <div class="gallery-item" data-src="${fullImageSrc}">
+                <img src="${thumbnailSrc}" alt="${safeTitle}" loading="lazy" decoding="async">
+            </div>
+        `;
+    }).join('');
+}
+
+function getColumnSpan(aspectRatio) {
+    if (window.innerWidth < 900) {
+        return 1;
+    }
+
+    if (aspectRatio >= 2.1) {
+        return 3;
+    }
+
+    if (aspectRatio >= 1.15) {
+        return 2;
+    }
+
+    return 1;
+}
+
+function getNormalizedAspectRatio(aspectRatio) {
+    return Math.min(PATCHWORK_MAX_ASPECT_RATIO, Math.max(PATCHWORK_MIN_ASPECT_RATIO, aspectRatio));
+}
+
+function layoutGalleryItem(item) {
+    const image = item.querySelector('img');
+
+    if (!image || !image.naturalWidth || !image.naturalHeight) {
+        return;
+    }
+
+    const gallery = item.parentElement;
+
+    if (!gallery) {
+        return;
+    }
+
+    const aspectRatio = image.naturalWidth / image.naturalHeight;
+    const normalizedAspectRatio = getNormalizedAspectRatio(aspectRatio);
+    const columnSpan = getColumnSpan(aspectRatio);
+
+    item.style.setProperty('--col-span', String(columnSpan));
+    item.dataset.orientation = aspectRatio > 1.15 ? 'landscape' : aspectRatio < 0.85 ? 'portrait' : 'square';
+
+    requestAnimationFrame(() => {
+        const galleryStyles = window.getComputedStyle(gallery);
+        const rowHeight = parseFloat(galleryStyles.getPropertyValue('grid-auto-rows'));
+        const rowGap = parseFloat(galleryStyles.getPropertyValue('gap'));
+        const itemWidth = item.getBoundingClientRect().width;
+        const itemHeight = itemWidth / normalizedAspectRatio;
+        const rowSpan = Math.max(
+            PATCHWORK_MIN_ROW_SPAN,
+            Math.min(
+                PATCHWORK_MAX_ROW_SPAN,
+                Math.ceil((itemHeight + rowGap) / (rowHeight + rowGap))
+            )
+        );
+
+        item.style.setProperty('--row-span', String(rowSpan));
+    });
+}
+
+function layoutGalleryItems() {
+    document.querySelectorAll('.gallery-item').forEach(layoutGalleryItem);
+}
+
+function initializePatchworkLayout() {
+    const galleryImages = document.querySelectorAll('.gallery-item img');
+
+    galleryImages.forEach(image => {
+        const item = image.closest('.gallery-item');
+
+        if (!item) {
+            return;
+        }
+
+        if (image.complete) {
+            layoutGalleryItem(item);
+            return;
+        }
+
+        image.addEventListener('load', () => layoutGalleryItem(item), { once: true });
+    });
+
+    window.addEventListener('resize', () => {
+        window.requestAnimationFrame(layoutGalleryItems);
+    });
+}
+
 // Lightbox functionality
 class PhotoGallery {
     constructor() {
@@ -118,6 +244,8 @@ class PhotoGallery {
 
 // Initialize gallery when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    renderGallery();
+    initializePatchworkLayout();
     new PhotoGallery();
 });
 
