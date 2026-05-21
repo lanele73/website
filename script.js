@@ -1,9 +1,9 @@
 const CLOUDINARY_THUMB_TRANSFORMS = 'f_auto,q_auto,w_1200,h_1400,c_limit';
 const CLOUDINARY_FULL_TRANSFORMS = 'f_auto,q_auto,w_2200,h_1600,c_limit';
-const PATCHWORK_MIN_ASPECT_RATIO = 0.95;
-const PATCHWORK_MAX_ASPECT_RATIO = 1.8;
-const PATCHWORK_MIN_ROW_SPAN = 12;
-const PATCHWORK_MAX_ROW_SPAN = 32;
+const PATCHWORK_MIN_ROW_SPAN = 8;
+const PATCHWORK_MAX_ROW_SPAN = 80;
+const SQUARE_MIN_ASPECT_RATIO = 0.9;
+const SQUARE_MAX_ASPECT_RATIO = 1.12;
 
 function buildCloudinaryUrl(publicId, transforms) {
     const encodedPublicId = publicId
@@ -12,6 +12,17 @@ function buildCloudinaryUrl(publicId, transforms) {
         .join('/');
 
     return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transforms}/${encodedPublicId}`;
+}
+
+function shufflePhotos(items) {
+    const shuffled = [...items];
+
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
 }
 
 function renderGallery() {
@@ -26,7 +37,9 @@ function renderGallery() {
         return;
     }
 
-    gallery.innerHTML = photos.map(({ publicId, title }) => {
+    const randomizedPhotos = shufflePhotos(photos);
+
+    gallery.innerHTML = randomizedPhotos.map(({ publicId, title }) => {
         const thumbnailSrc = buildCloudinaryUrl(publicId, CLOUDINARY_THUMB_TRANSFORMS);
         const fullImageSrc = buildCloudinaryUrl(publicId, CLOUDINARY_FULL_TRANSFORMS);
         const safeTitle = title ?? '';
@@ -48,6 +61,10 @@ function getColumnSpan(aspectRatio) {
         return 3;
     }
 
+    if (aspectRatio >= SQUARE_MIN_ASPECT_RATIO && aspectRatio <= SQUARE_MAX_ASPECT_RATIO) {
+        return 2;
+    }
+
     if (aspectRatio >= 1.15) {
         return 2;
     }
@@ -55,8 +72,16 @@ function getColumnSpan(aspectRatio) {
     return 1;
 }
 
-function getNormalizedAspectRatio(aspectRatio) {
-    return Math.min(PATCHWORK_MAX_ASPECT_RATIO, Math.max(PATCHWORK_MIN_ASPECT_RATIO, aspectRatio));
+function getSizeBias(aspectRatio) {
+    if (aspectRatio >= SQUARE_MIN_ASPECT_RATIO && aspectRatio <= SQUARE_MAX_ASPECT_RATIO) {
+        return 1.25;
+    }
+
+    if (aspectRatio < 0.8) {
+        return 1.1;
+    }
+
+    return 1;
 }
 
 function layoutGalleryItem(item) {
@@ -73,8 +98,8 @@ function layoutGalleryItem(item) {
     }
 
     const aspectRatio = image.naturalWidth / image.naturalHeight;
-    const normalizedAspectRatio = getNormalizedAspectRatio(aspectRatio);
     const columnSpan = getColumnSpan(aspectRatio);
+    const sizeBias = getSizeBias(aspectRatio);
 
     item.style.setProperty('--col-span', String(columnSpan));
     item.dataset.orientation = aspectRatio > 1.15 ? 'landscape' : aspectRatio < 0.85 ? 'portrait' : 'square';
@@ -83,13 +108,18 @@ function layoutGalleryItem(item) {
         const galleryStyles = window.getComputedStyle(gallery);
         const rowHeight = parseFloat(galleryStyles.getPropertyValue('grid-auto-rows'));
         const rowGap = parseFloat(galleryStyles.getPropertyValue('gap'));
-        const itemWidth = item.getBoundingClientRect().width;
-        const itemHeight = itemWidth / normalizedAspectRatio;
+        const imageHeight = image.getBoundingClientRect().height;
+
+        if (!rowHeight || !imageHeight) {
+            return;
+        }
+
+        const biasedHeight = imageHeight * sizeBias;
         const rowSpan = Math.max(
             PATCHWORK_MIN_ROW_SPAN,
             Math.min(
                 PATCHWORK_MAX_ROW_SPAN,
-                Math.ceil((itemHeight + rowGap) / (rowHeight + rowGap))
+                Math.ceil((biasedHeight + rowGap) / (rowHeight + rowGap))
             )
         );
 
@@ -163,14 +193,27 @@ class PhotoGallery {
         this.addTouchSupport();
     }
 
+    clearSelectedItem() {
+        this.galleryItems.forEach(item => item.classList.remove('is-selected'));
+    }
+
+    setSelectedItem(index) {
+        this.clearSelectedItem();
+        const selectedItem = this.galleryItems[index];
+
+        if (selectedItem) {
+            selectedItem.classList.add('is-selected');
+        }
+    }
+
     openLightbox(index) {
         this.currentIndex = index;
         const item = this.galleryItems[index];
         const fullImageSrc = item.getAttribute('data-src');
-        const alt = item.querySelector('img').getAttribute('alt');
 
+        this.setSelectedItem(index);
         this.lightboxImg.src = fullImageSrc;
-        this.caption.textContent = alt;
+        this.caption.textContent = '';
         this.lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -178,6 +221,7 @@ class PhotoGallery {
     closeLightbox() {
         this.lightbox.classList.remove('active');
         document.body.style.overflow = 'auto';
+        this.clearSelectedItem();
     }
 
     nextImage() {
@@ -193,10 +237,10 @@ class PhotoGallery {
     updateLightboxImage() {
         const item = this.galleryItems[this.currentIndex];
         const fullImageSrc = item.getAttribute('data-src');
-        const alt = item.querySelector('img').getAttribute('alt');
 
+        this.setSelectedItem(this.currentIndex);
         this.lightboxImg.src = fullImageSrc;
-        this.caption.textContent = alt;
+        this.caption.textContent = '';
     }
 
     handleKeyboard(e) {
