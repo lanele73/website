@@ -1,9 +1,23 @@
 const CLOUDINARY_THUMB_TRANSFORMS = 'f_auto,q_auto,w_1200,h_1400,c_limit';
 const CLOUDINARY_FULL_TRANSFORMS = 'f_auto,q_auto,w_2200,h_1600,c_limit';
-const PATCHWORK_MIN_ROW_SPAN = 8;
-const PATCHWORK_MAX_ROW_SPAN = 80;
-const SQUARE_MIN_ASPECT_RATIO = 0.9;
-const SQUARE_MAX_ASPECT_RATIO = 1.12;
+const PATCHWORK_MIN_ROW_SPAN = 10;
+const PATCHWORK_MAX_ROW_SPAN = 90;
+
+function getMinimumRowSpan(aspectRatio) {
+    if (aspectRatio >= 2.6) {
+        return 4;
+    }
+
+    if (aspectRatio >= 1.9) {
+        return 6;
+    }
+
+    if (aspectRatio >= 1.35) {
+        return 8;
+    }
+
+    return PATCHWORK_MIN_ROW_SPAN;
+}
 
 function buildCloudinaryUrl(publicId, transforms) {
     const encodedPublicId = publicId
@@ -52,38 +66,6 @@ function renderGallery() {
     }).join('');
 }
 
-function getColumnSpan(aspectRatio) {
-    if (window.innerWidth < 900) {
-        return 1;
-    }
-
-    if (aspectRatio >= 2.1) {
-        return 3;
-    }
-
-    if (aspectRatio >= SQUARE_MIN_ASPECT_RATIO && aspectRatio <= SQUARE_MAX_ASPECT_RATIO) {
-        return 2;
-    }
-
-    if (aspectRatio >= 1.15) {
-        return 2;
-    }
-
-    return 1;
-}
-
-function getSizeBias(aspectRatio) {
-    if (aspectRatio >= SQUARE_MIN_ASPECT_RATIO && aspectRatio <= SQUARE_MAX_ASPECT_RATIO) {
-        return 1.25;
-    }
-
-    if (aspectRatio < 0.8) {
-        return 1.1;
-    }
-
-    return 1;
-}
-
 function layoutGalleryItem(item) {
     const image = item.querySelector('img');
 
@@ -98,28 +80,29 @@ function layoutGalleryItem(item) {
     }
 
     const aspectRatio = image.naturalWidth / image.naturalHeight;
-    const columnSpan = getColumnSpan(aspectRatio);
-    const sizeBias = getSizeBias(aspectRatio);
 
-    item.style.setProperty('--col-span', String(columnSpan));
+    item.style.setProperty('--col-span', '1');
     item.dataset.orientation = aspectRatio > 1.15 ? 'landscape' : aspectRatio < 0.85 ? 'portrait' : 'square';
 
     requestAnimationFrame(() => {
         const galleryStyles = window.getComputedStyle(gallery);
         const rowHeight = parseFloat(galleryStyles.getPropertyValue('grid-auto-rows'));
         const rowGap = parseFloat(galleryStyles.getPropertyValue('gap'));
-        const imageHeight = image.getBoundingClientRect().height;
+        const itemWidth = item.getBoundingClientRect().width;
 
-        if (!rowHeight || !imageHeight) {
+        if (!rowHeight || !itemWidth) {
             return;
         }
 
-        const biasedHeight = imageHeight * sizeBias;
+        const borderAdjustment = 2;
+        const expectedCardHeight = (itemWidth / aspectRatio) + borderAdjustment;
+        const minimumRowSpan = getMinimumRowSpan(aspectRatio);
+
         const rowSpan = Math.max(
-            PATCHWORK_MIN_ROW_SPAN,
+            minimumRowSpan,
             Math.min(
                 PATCHWORK_MAX_ROW_SPAN,
-                Math.ceil((biasedHeight + rowGap) / (rowHeight + rowGap))
+                Math.ceil((expectedCardHeight + rowGap) / (rowHeight + rowGap))
             )
         );
 
