@@ -6,6 +6,9 @@ const CLOUDINARY_CLOUD_NAME = 'deezpztlx';
 // Include folder prefix if you use folders (e.g. fotos/name). Include the _suffix Cloudinary added if present.
 
 const photos = [
+    { publicId: 'coron_bsrt93', title: 'Coron' },
+    { publicId: 'bich_dong_glcl7q', title: 'Bich Dong' },
+    { publicId: 'tam_coc_lcmxuf', title: 'Tam Coc' },
     { publicId: 'vista_chinesa_xbaaf6', title: 'Rio' },
     { publicId: 'toronto_cr3bim', title: 'CN' },
     { publicId: 'taipei_101_q9vpgi', title: 'Taipei 101' },
@@ -43,31 +46,4 @@ const photos = [
     { publicId: 'bangkok_ba6wsx', title: 'Bangkok' },
     { publicId: 'banff_xcehev', title: 'Banff' },
     { publicId: 'arenal_neqrk3', title: 'Arenal' },
-
-    // Direct URLs (for testing or if you prefer this format)
-    
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721050/puffin_inb8w1.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721049/nl_hut_w7jhh2.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721048/nl_fox_dqifei.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721047/nl_cliffs_wza10a.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721046/mono_ardilla_fhhvho.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721045/la_guaira_2_qwzm4p.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721044/la_guaira_1_ny9mrx.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721043/la_fortuna_ienfvf.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721042/jordan_river_npwxxb.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721041/jo%CC%88kulsa%CC%81rglju%CC%81fur_plpfiw.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721040/hvalnes_dwljzw.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721039/hanoi_svgmlz.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721038/grand_palace_zsepyj.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721037/gran_roque_gtquuw.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721036/espadilla_etvcx5.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721035/el_tigre_og5sgo.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721034/dos_mosquises_idvg5s.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721033/cliffs_hgrldr.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721032/candelita_collareja_kup2v0.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721031/bertioga_2_hrrh8y.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721030/bertioga_1_h5av5y.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721029/bangkok_ba6wsx.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721029/banff_xcehev.jpg
-    // https://res.cloudinary.com/deezpztlx/image/upload/v1778721028/arenal_neqrk3.jpg
 ];
