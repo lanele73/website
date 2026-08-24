@@ -6,7 +6,6 @@ const CLOUDINARY_CLOUD_NAME = 'deezpztlx';
 // Include folder prefix if you use folders (e.g. fotos/name). Include the _suffix Cloudinary added if present.
 
 const photos = [
-    { publicId: 'coron_bsrt93', title: 'Coron' },
     { publicId: 'bich_dong_glcl7q', title: 'Bich Dong' },
     { publicId: 'tam_coc_lcmxuf', title: 'Tam Coc' },
     { publicId: 'vista_chinesa_xbaaf6', title: 'Rio' },
