@@ -51,8 +51,9 @@ const photos = [
     { publicId: 'pu_luong_valley_owtkpa', title: 'Pu Luong Valley' },
     { publicId: 'pu_luong_terraces_vwssrr', title: 'Pu Luong Terraces' },
     { publicId: 'palawan_expedition_xuicsl', title: 'Palawan Expedition' },
-    { publicId: 'milky_way_eralm9', title: 'Milky Way' },
+    // { publicId: 'milky_way_eralm9', title: 'Milky Way' },
     { publicId: 'hang_mua_viewpoint_zsg5rg', title: 'Hang Mua Viewpoint' },
     { publicId: 'ha_long_sqdk2m', title: 'Ha Long' },
     { publicId: 'coron_jkbqbl', title: 'Coron' },
+    { publicId: 'eclipse_yhv2sh', title: 'Eclipse' },
 ];
