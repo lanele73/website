@@ -28,6 +28,17 @@ function buildCloudinaryUrl(publicId, transforms) {
     return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transforms}/${encodedPublicId}`;
 }
 
+function escapeAttribute(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;');
+}
+
+function formatPhotoCaption(title, location) {
+    return [title, location].map(part => part?.trim()).filter(Boolean).join(' \u2022 ');
+}
+
 function shufflePhotos(items) {
     const shuffled = [...items];
 
@@ -53,14 +64,14 @@ function renderGallery() {
 
     const randomizedPhotos = shufflePhotos(photos);
 
-    gallery.innerHTML = randomizedPhotos.map(({ publicId, title }) => {
+    gallery.innerHTML = randomizedPhotos.map(({ publicId, title, location }) => {
         const thumbnailSrc = buildCloudinaryUrl(publicId, CLOUDINARY_THUMB_TRANSFORMS);
         const fullImageSrc = buildCloudinaryUrl(publicId, CLOUDINARY_FULL_TRANSFORMS);
-        const safeTitle = title ?? '';
+        const caption = formatPhotoCaption(title, location);
 
         return `
-            <div class="gallery-item" data-src="${fullImageSrc}">
-                <img src="${thumbnailSrc}" alt="${safeTitle}" loading="lazy" decoding="async">
+            <div class="gallery-item" data-src="${escapeAttribute(fullImageSrc)}" data-caption="${escapeAttribute(caption)}">
+                <img src="${escapeAttribute(thumbnailSrc)}" alt="${escapeAttribute(caption)}" loading="lazy" decoding="async">
             </div>
         `;
     }).join('');
@@ -196,7 +207,8 @@ class PhotoGallery {
 
         this.setSelectedItem(index);
         this.lightboxImg.src = fullImageSrc;
-        this.caption.textContent = '';
+        this.lightboxImg.alt = item.dataset.caption ?? '';
+        this.caption.textContent = item.dataset.caption ?? '';
         this.lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -223,7 +235,8 @@ class PhotoGallery {
 
         this.setSelectedItem(this.currentIndex);
         this.lightboxImg.src = fullImageSrc;
-        this.caption.textContent = '';
+        this.lightboxImg.alt = item.dataset.caption ?? '';
+        this.caption.textContent = item.dataset.caption ?? '';
     }
 
     handleKeyboard(e) {
