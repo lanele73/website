@@ -16,7 +16,7 @@ const photos = [
     { publicId: 'skerwink_1_pfsbxx', title: 'Skerwink Trail 1', location: 'Canada' },
     { publicId: 'skerwink_2_fyusom', title: 'Skerwink Trail 2', location: 'Canada' },
     { publicId: 'seljalandsfoss_lewujm', title: 'Seljalandsfoss', location: 'Iceland' },
-    { publicId: 'santa_teresa_u7abx6', title: 'Santa Teresa', location: 'Costa Rica' },
+    { publicId: 'santa_teresa_u7abx6', title: 'Santa Teresa', location: 'Venezuela' },
     { publicId: 'rj_r5gop8', title: 'Rio de Janeiro', location: 'Brazil' },
     { publicId: 'riverdale_ecv8w3', title: 'Riverdale', location: 'Canada' },
     { publicId: 'quetzal_nnhgq5', title: 'Quetzal', location: 'Costa Rica' },
