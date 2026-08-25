@@ -18,11 +18,25 @@
         </div>
     </main>
 
+    <button type="button" class="slideshow-play" id="slideshow-play" aria-label="Play slideshow">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <polygon points="8,5 19,12 8,19" />
+        </svg>
+    </button>
+
     <!-- Lightbox Modal -->
     <div id="lightbox" class="lightbox">
         <span class="close">&times;</span>
-        <span class="prev">&#10094;</span>
-        <span class="next">&#10095;</span>
+        <span class="prev" aria-label="Previous photo">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <polygon points="8,5 19,12 8,19" />
+            </svg>
+        </span>
+        <span class="next" aria-label="Next photo">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <polygon points="8,5 19,12 8,19" />
+            </svg>
+        </span>
         <div class="lightbox-stage">
             <img class="lightbox-content" id="lightbox-img" alt="">
             <div class="caption" id="caption"></div>

@@ -2,6 +2,7 @@ const CLOUDINARY_THUMB_TRANSFORMS = 'f_auto,q_auto,w_1200,h_1400,c_limit';
 const CLOUDINARY_FULL_TRANSFORMS = 'f_auto,q_auto,w_2200,h_1600,c_limit';
 const PATCHWORK_MIN_ROW_SPAN = 10;
 const PATCHWORK_MAX_ROW_SPAN = 90;
+const SLIDESHOW_INTERVAL_MS = 10000;
 
 function getMinimumRowSpan(aspectRatio) {
     if (aspectRatio >= 2.6) {
@@ -72,6 +73,7 @@ function renderGallery() {
         return `
             <div class="gallery-item" data-src="${escapeAttribute(fullImageSrc)}" data-caption="${escapeAttribute(caption)}">
                 <img src="${escapeAttribute(thumbnailSrc)}" alt="${escapeAttribute(caption)}" loading="lazy" decoding="async">
+                <span class="gallery-caption">${escapeAttribute(caption)}</span>
             </div>
         `;
     }).join('');
@@ -156,15 +158,22 @@ class PhotoGallery {
         this.caption = document.getElementById('caption');
         this.galleryItems = document.querySelectorAll('.gallery-item');
         this.currentIndex = 0;
-        
+        this.slideshowTimer = null;
+        this.slideshowActive = false;
+        this.playButton = document.getElementById('slideshow-play');
+
         this.init();
     }
 
     init() {
         // Add click listeners to gallery items
         this.galleryItems.forEach((item, index) => {
-            item.addEventListener('click', () => this.openLightbox(index));
+            item.addEventListener('click', () => this.openSelectedPhoto(index));
         });
+
+        if (this.playButton) {
+            this.playButton.addEventListener('click', () => this.startSlideshow());
+        }
 
         // Close button
         document.querySelector('.close').addEventListener('click', () => this.closeLightbox());
@@ -200,6 +209,61 @@ class PhotoGallery {
         }
     }
 
+    openSelectedPhoto(index) {
+        this.stopSlideshow();
+        this.openLightbox(index);
+    }
+
+    startSlideshow() {
+        if (!this.galleryItems.length) {
+            return;
+        }
+
+        this.stopSlideshow();
+        this.slideshowActive = true;
+        this.openLightbox(Math.floor(Math.random() * this.galleryItems.length));
+        this.scheduleSlideshowAdvance();
+        this.preloadUpcomingSlideshowImage();
+    }
+
+    stopSlideshow() {
+        this.slideshowActive = false;
+        this.clearSlideshowTimer();
+    }
+
+    clearSlideshowTimer() {
+        if (this.slideshowTimer !== null) {
+            window.clearTimeout(this.slideshowTimer);
+            this.slideshowTimer = null;
+        }
+    }
+
+    scheduleSlideshowAdvance() {
+        this.clearSlideshowTimer();
+
+        if (!this.slideshowActive) {
+            return;
+        }
+
+        this.slideshowTimer = window.setTimeout(() => {
+            this.nextImage();
+        }, SLIDESHOW_INTERVAL_MS);
+    }
+
+    preloadUpcomingSlideshowImage() {
+        if (!this.galleryItems.length) {
+            return;
+        }
+
+        const nextItem = this.galleryItems[(this.currentIndex + 1) % this.galleryItems.length];
+        const nextSrc = nextItem?.getAttribute('data-src');
+
+        if (nextSrc) {
+            const image = new Image();
+            image.src = nextSrc;
+        }
+    }
+
     openLightbox(index) {
         this.currentIndex = index;
         const item = this.galleryItems[index];
@@ -214,6 +278,7 @@ class PhotoGallery {
     }
 
     closeLightbox() {
+        this.stopSlideshow();
         this.lightbox.classList.remove('active');
         document.body.style.overflow = 'auto';
         this.clearSelectedItem();
@@ -222,11 +287,20 @@ class PhotoGallery {
     nextImage() {
         this.currentIndex = (this.currentIndex + 1) % this.galleryItems.length;
         this.updateLightboxImage();
+
+        if (this.slideshowActive) {
+            this.scheduleSlideshowAdvance();
+            this.preloadUpcomingSlideshowImage();
+        }
     }
 
     prevImage() {
         this.currentIndex = (this.currentIndex - 1 + this.galleryItems.length) % this.galleryItems.length;
         this.updateLightboxImage();
+
+        if (this.slideshowActive) {
+            this.scheduleSlideshowAdvance();
+        }
     }
 
     updateLightboxImage() {
