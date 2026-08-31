@@ -34,7 +34,7 @@ const photos = [
     { publicId: 'hvalnes_dwljzw', title: 'Hvalnes', location: 'Ísland' },
     { publicId: 'hanoi_svgmlz', title: 'Hà Nội', location: 'Việt Nam' },
     { publicId: 'grand_palace_zsepyj', title: 'Grand Palace', location: 'ประเทศไทย' },
-    { publicId: 'gran_roque_gtquuw', title: 'Gran Roque', location: 'Venezuela' },
+    { publicId: 'gran_roque_gtquuw', title: 'Gran Roque Pelicans', location: 'Venezuela' },
     { publicId: 'espadilla_etvcx5', title: 'Espadilla', location: 'Costa Rica' },
     { publicId: 'el_tigre_og5sgo', title: 'El Tigre', location: 'Costa Rica' },
     { publicId: 'dos_mosquises_idvg5s', title: 'Dos Mosquises', location: 'Venezuela' },
@@ -56,4 +56,8 @@ const photos = [
     { publicId: 'ha_long_sqdk2m', title: 'Hạ Long Bay', location: 'Việt Nam' },
     { publicId: 'coron_jkbqbl', title: 'Coron', location: 'Pilipinas' },
     { publicId: 'eclipse_yhv2sh', title: 'Eclipse', location: 'Canada' },
+    { publicId: 'tam_coc_road_i5l9wz', title: 'Tam Cốc Road', location: 'Việt Nam' },
+    { publicId: 'aurora_aoxclg', title: 'Aurora', location: 'Ísland' },
+    { publicId: 'gran_roque_sunset_ds7ytg', title: 'Gran Roque Sunset', location: 'Venezuela' },
+    { publicId: 'cape_spear_n62imu', title: 'Cape Spear', location: 'Canada' },
 ];
