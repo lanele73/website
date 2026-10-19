@@ -4,6 +4,7 @@ const CLOUDINARY_CLOUD_NAME = 'deezpztlx';
 
 // publicId must match Cloudinary exactly (copy from Media Library or the path after /upload/ in a delivery URL).
 // Include folder prefix if you use folders (e.g. fotos/name). Include the _suffix Cloudinary added if present.
+// Use plain Unicode characters (e.g. ä, ü), not URL escapes (%C3%A4, %C3%BC); script.js encodes IDs for URLs.
 
 const photos = [
     { publicId: 'rj_r5gop8', title: 'Rio de Janeiro', location: 'Brasil' },
@@ -63,9 +64,9 @@ const photos = [
     { publicId: 'palawan_expedition_xuicsl', title: 'Palawan', location: 'Pilipinas' },
     { publicId: 'gratwanderweg_fuhpv5', title: 'Gratwanderweg', location: 'Schwiiz' },
     { publicId: 'alp_begligen_qt9lkx', title: 'Alp Begligen', location: 'Schwiiz' },
-    { publicId: 'vorder_gl%C3%A4rnisch_mjc40t', title: 'Vorder Glärnisch', location: 'Schwiiz' },
-    { publicId: 'saxer_l%C3%BCcke_cnkios', title: 'Saxer Lücke', location: 'Schwiiz' },
-    { publicId: 'fr%C3%BCmsen_ptkrbq', title: 'Frümsen', location: 'Schwiiz' },
-    { publicId: 'vierwaldst%C3%A4ttersee_jy6wt3', title: 'Vierwaldstättersee', location: 'Schwiiz' },
+    { publicId: 'vorder_glärnisch_mjc40t', title: 'Vorder Glärnisch', location: 'Schwiiz' },
+    { publicId: 'saxer_lücke_cnkios', title: 'Saxer Lücke', location: 'Schwiiz' },
+    { publicId: 'frümsen_ptkrbq', title: 'Frümsen', location: 'Schwiiz' },
+    { publicId: 'vierwaldstättersee_jy6wt3', title: 'Vierwaldstättersee', location: 'Schwiiz' },
     { publicId: 'rigi_kulm_puvuaq', title: 'Rigi Kulm', location: 'Schwiiz' },
 ];
