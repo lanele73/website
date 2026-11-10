@@ -15,6 +15,10 @@
     --gallery-gap: 1.25rem;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background-color: var(--background);
@@ -46,6 +50,213 @@ header h1 {
     font-weight: 300;
     letter-spacing: 0.06em;
     text-transform: lowercase;
+}
+
+.view-switch {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.view-switch button,
+#map-retry {
+    border: 0;
+    border-bottom: 1px solid transparent;
+    padding: 0.25rem 0;
+    background: none;
+    color: #888;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+}
+
+.view-switch button[aria-pressed='true'] {
+    color: var(--text);
+    border-bottom-color: #888;
+}
+
+.view-switch button:hover,
+#map-retry:hover {
+    color: var(--text);
+}
+
+.view-switch button:focus-visible,
+#map-retry:focus-visible,
+.map-photo:focus-visible {
+    outline: 1px solid var(--text);
+    outline-offset: 4px;
+}
+
+.map-toolbar {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+#map-status {
+    color: #b3b3b3;
+    font-size: 0.75rem;
+    font-weight: 300;
+}
+
+#photo-map {
+    height: clamp(320px, 65vh, 760px);
+    width: 100%;
+    background: #141414;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    font-family: inherit;
+    z-index: 0;
+}
+
+body.map-view-active {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 480px;
+    padding-inline: clamp(0.75rem, 2vw, 2rem);
+}
+
+body.map-view-active header {
+    width: 100%;
+    max-width: none;
+    padding: 1rem 0;
+}
+
+body.map-view-active header h1 {
+    font-size: 2rem;
+}
+
+body.map-view-active .view-switch {
+    margin-top: 0.75rem;
+}
+
+body.map-view-active main {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    max-width: none;
+    padding: 0 0 max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+body.map-view-active #map-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+body.map-view-active #photo-map {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+}
+
+#photo-map .maplibregl-ctrl-attrib {
+    background: #191919;
+    color: #b3b3b3;
+}
+
+#photo-map .maplibregl-ctrl-attrib a {
+    color: #ddd;
+}
+
+.photo-map-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    cursor: pointer;
+}
+
+.photo-map-marker span {
+    display: grid;
+    place-items: center;
+    width: 12px;
+    height: 12px;
+    background: #f5f5f5;
+    border: 1px solid #333;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(245, 245, 245, 0.15);
+}
+
+.photo-map-marker span:not(:empty) {
+    width: 24px;
+    height: 24px;
+    color: #141414;
+    font-size: 11px;
+}
+
+.photo-map-marker:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+    border-radius: 50%;
+}
+
+#photo-map .maplibregl-popup-content {
+    background: #191919;
+    color: var(--text);
+}
+
+#photo-map .maplibregl-popup-tip {
+    border-top-color: #191919;
+    border-bottom-color: #191919;
+}
+
+#photo-map .maplibregl-popup-content {
+    padding: 14px;
+    border-radius: 6px;
+}
+
+.map-photo-list {
+    width: max-content;
+    padding: 5px;
+}
+
+.map-photo-list:has(.map-photo + .map-photo) {
+    max-height: 60dvh;
+    overflow-y: auto;
+}
+
+.map-photo {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: #b3b3b3;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.map-photo + .map-photo {
+    margin-top: 1rem;
+}
+
+.map-photo img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(320px, calc(100vw - 100px));
+    max-height: min(280px, 35vh);
+    max-height: min(280px, 35dvh);
+    border: 3px solid rgba(255, 255, 255, 0.92);
+}
+
+.map-photo span {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    text-transform: lowercase;
+    max-width: min(320px, calc(100vw - 100px));
 }
 
 .slideshow-play {

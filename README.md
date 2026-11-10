@@ -22,6 +22,61 @@ Edit [photos.js](photos.js): adjust the `photos` array (`publicId` and `title`).
 
 Thumbnail and lightbox sizes use Cloudinary transformations in [script.js](script.js) (`CLOUDINARY_THUMB_TRANSFORMS` and `CLOUDINARY_FULL_TRANSFORMS`).
 
+### Photo map
+
+The **photos / map** switch opens a monochrome MapLibre map. The site remains static:
+no backend, build step, account, or API key is required. MapLibre GL JS 5.6.1 and
+its CSS load from UNPKG only when the map is first opened.
+[OpenFreeMap](https://openfreemap.org/) provides OpenStreetMap-based vector tiles,
+loading finer coastlines, lakes, and rivers as you zoom. A small custom style in
+[map.js](map.js) draws dark land and water with thin, muted country boundaries
+(excluding maritime boundaries): no labels, roads, or colorful features.
+Subtle 2D hillshading appears from zoom 4 using key-free
+[Terrain Tiles on AWS](https://registry.opendata.aws/terrain-tiles/).
+It adds a little mountain texture without changing the map into a 3D terrain view;
+water is drawn above it so oceans and lakes remain flat.
+Unlike the former simplified world outline, the map loads new detail at each
+available data zoom level. Zoom is capped at 16; the source's native detail is finite.
+
+Keep the visible OpenFreeMap/OpenStreetMap and linked terrain-source attribution.
+The [terrain credits and licensing](https://github.com/tilezen/joerd/blob/master/docs/attribution.md)
+identify the regional elevation-data providers.
+No library logo, flag,
+or zoom buttons are displayed. OpenFreeMap's public service has no guaranteed SLA.
+The browser must support WebGL.
+
+In [photos.js](photos.js), replace a photo's
+`coordinates: null` with `coordinates: [latitude, longitude]` using decimal degrees
+(latitude first, **not** GeoJSON order). For example, `[45.5, -73.6]` describes a
+point near Montreal; use the actual shooting location for your own photo.
+Latitude must be between -90 and 90; longitude between -180 and 180.
+
+Photos with missing coordinates remain in the gallery but do not get a marker.
+Invalid coordinates are reported in the map status and browser console.
+Coordinates are public, so leave sensitive locations unset or use an intentionally
+approximate location. Until coordinates are added, the map shows a world view
+with an empty-state message, not guessed locations.
+
+Markers at identical coordinates share a popup listing their photos. Nearby but
+different locations have separate markers; zoom in to distinguish them. Select a
+white-bordered preview to open the existing lightbox. Previews have no close button;
+click elsewhere on the map or press Escape while focused on the preview to dismiss.
+Preview images use higher-resolution Cloudinary delivery and keep their original
+aspect ratio, fitting the available screen space without cropping or a single-photo
+scrollbar. Shared-location lists can scroll when multiple photos exceed the height limit.
+The map fills the space below a compact
+header, with narrow margins; the gallery layout is unchanged. With no photo
+coordinates, the opening world view fills the frame, cropping its edges as needed
+rather than leaving a small world in the center.
+Zoom using the mouse wheel, touch gestures, or the keyboard's `+` / `-` keys
+when the map is focused. On-map zoom buttons are hidden.
+
+Open [index.html](index.html) directly in a browser, or serve the site over HTTP(S)
+(for example, `python3 -m http.server 8000`). Map data loads on demand
+from OpenFreeMap and AWS, so direct `file://` previews work without a local server.
+An internet connection is needed for MapLibre, map tiles, and Cloudinary photos.
+Loading failures show a message and retry button.
+
 ### List many photos at once (optional)
 
 To dump `publicId` lines for [photos.js](photos.js) using the Admin API (local only — **never** commit API secrets):
@@ -85,6 +140,7 @@ Edit `index.html` (for example the `<h1>` in the header).
 - Responsive grid, lightbox, keyboard and touch navigation, lazy loading
 - No runtime npm deps for the gallery: plain HTML, CSS, and JavaScript
 - Thumbnails and large views generated on the fly via Cloudinary URLs
+- On-demand monochrome MapLibre/OpenFreeMap map with photo previews and optional coordinates
 
 ## Project structure
 
@@ -93,7 +149,8 @@ website/
 ├── index.html
 ├── style.css
 ├── script.js              # Gallery + Cloudinary URL helpers
-├── photos.js              # Cloud name + photo list (publicId, title)
+├── map.js                 # On-demand MapLibre map + photo/lightbox integration
+├── photos.js              # Cloud name + photo list, captions, optional coordinates
 ├── scripts/
 │   └── list-cloudinary-photos.mjs   # npm run list-cloudinary (needs .env)
 ├── package.json

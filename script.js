@@ -71,7 +71,7 @@ function renderGallery() {
         const caption = formatPhotoCaption(title, location);
 
         return `
-            <div class="gallery-item" data-src="${escapeAttribute(fullImageSrc)}" data-caption="${escapeAttribute(caption)}">
+            <div class="gallery-item" data-public-id="${escapeAttribute(publicId)}" data-src="${escapeAttribute(fullImageSrc)}" data-caption="${escapeAttribute(caption)}">
                 <img src="${escapeAttribute(thumbnailSrc)}" alt="${escapeAttribute(caption)}" loading="lazy" decoding="async">
                 <span class="gallery-caption">${escapeAttribute(caption)}</span>
             </div>
@@ -214,6 +214,16 @@ class PhotoGallery {
         this.openLightbox(index);
     }
 
+    openPhotoById(publicId) {
+        const index = Array.from(this.galleryItems).findIndex(item => item.dataset.publicId === publicId);
+
+        if (index === -1) {
+            throw new Error(`Photo not found in gallery: ${publicId}`);
+        }
+
+        this.openSelectedPhoto(index);
+    }
+
     startSlideshow() {
         if (!this.galleryItems.length) {
             return;
@@ -265,6 +275,9 @@ class PhotoGallery {
     }
 
     openLightbox(index) {
+        if (!this.lightbox.classList.contains('active')) {
+            this.previousFocus = document.activeElement;
+        }
         this.currentIndex = index;
         const item = this.galleryItems[index];
         const fullImageSrc = item.getAttribute('data-src');
@@ -274,6 +287,8 @@ class PhotoGallery {
         this.lightboxImg.alt = item.dataset.caption ?? '';
         this.caption.textContent = item.dataset.caption ?? '';
         this.lightbox.classList.add('active');
+        this.lightbox.setAttribute('tabindex', '-1');
+        this.lightbox.focus();
         document.body.style.overflow = 'hidden';
     }
 
@@ -282,6 +297,7 @@ class PhotoGallery {
         this.lightbox.classList.remove('active');
         document.body.style.overflow = 'auto';
         this.clearSelectedItem();
+        this.previousFocus?.focus();
     }
 
     nextImage() {
@@ -360,7 +376,8 @@ class PhotoGallery {
 document.addEventListener('DOMContentLoaded', () => {
     renderGallery();
     initializePatchworkLayout();
-    new PhotoGallery();
+    const gallery = new PhotoGallery();
+    new PhotoMap(gallery);
 });
 
 // Preload images for better performance
