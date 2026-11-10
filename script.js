@@ -63,9 +63,9 @@ function renderGallery() {
         return;
     }
 
-    const randomizedPhotos = shufflePhotos(photos);
+    const orderedPhotos = RANDOMIZE_PHOTO_ORDER ? shufflePhotos(photos) : photos;
 
-    gallery.innerHTML = randomizedPhotos.map(({ publicId, title, location }) => {
+    gallery.innerHTML = orderedPhotos.map(({ publicId, title, location }) => {
         const thumbnailSrc = buildCloudinaryUrl(publicId, CLOUDINARY_THUMB_TRANSFORMS);
         const fullImageSrc = buildCloudinaryUrl(publicId, CLOUDINARY_FULL_TRANSFORMS);
         const caption = formatPhotoCaption(title, location);

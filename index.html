@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>fotos</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <header>
         <h1>fotos</h1>
         <p class="subtitle">Lorenzo Kogler Anele</p>
         <nav class="view-switch" aria-label="Photo views">
-            <button type="button" id="photos-view" aria-controls="gallery" aria-pressed="true">photos</button>
-            <button type="button" id="map-view" aria-controls="map-panel" aria-pressed="false">map</button>
+            <button type="button" id="photos-view" aria-controls="gallery" aria-pressed="true" aria-label="fotos" title="fotos">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect x="3" y="3" width="7" height="7" rx="0.5" />
+                    <rect x="14" y="3" width="7" height="7" rx="0.5" />
+                    <rect x="3" y="14" width="7" height="7" rx="0.5" />
+                    <rect x="14" y="14" width="7" height="7" rx="0.5" />
+                </svg>
+            </button>
+            <button type="button" id="map-view" aria-controls="map-panel" aria-pressed="false" aria-label="mapa" title="mapa">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2V5zM9 3v16M15 5v16" />
+                </svg>
+            </button>
         </nav>
     </header>
 
@@ -58,4 +71,5 @@
     <script src="map.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

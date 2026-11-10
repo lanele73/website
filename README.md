@@ -18,13 +18,19 @@ Upload your images to the Cloudinary Media Library. Use a single folder (for exa
 
 ### 3. Configure the gallery
 
-Edit [photos.js](photos.js): adjust the `photos` array (`publicId` and `title`). Order in the array is the order on the page.
+Edit [photos.js](photos.js): adjust the `photos` array (`publicId` and `title`).
+Set `RANDOMIZE_PHOTO_ORDER = true` to shuffle the gallery on each page load, or
+`false` (currently selected for debugging) to follow the array order. There are no
+capture dates in the data, so chronological display depends on keeping the array
+in chronological order. Lightbox navigation follows the gallery order.
 
 Thumbnail and lightbox sizes use Cloudinary transformations in [script.js](script.js) (`CLOUDINARY_THUMB_TRANSFORMS` and `CLOUDINARY_FULL_TRANSFORMS`).
 
 ### Photo map
 
-The **photos / map** switch opens a monochrome MapLibre map. The site remains static:
+The **photo-grid / folded-map** icon switch opens the gallery or a monochrome
+MapLibre map. Icons retain accessible labels and hover tooltips (`fotos` / `mapa`).
+The site remains static:
 no backend, build step, account, or API key is required. MapLibre GL JS 5.6.1 and
 its CSS load from UNPKG only when the map is first opened.
 [OpenFreeMap](https://openfreemap.org/) provides OpenStreetMap-based vector tiles,

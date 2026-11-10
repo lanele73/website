@@ -187,17 +187,11 @@ class PhotoMap {
             console.error('Invalid photo coordinates; expected [latitude, longitude].', invalidPhotos.map(photo => photo.publicId));
         }
 
-        const missingCount = photos.length - locatedPhotos.length;
-        let summary = locatedPhotos.length
-            ? `${locatedPhotos.length} of ${photos.length} photos mapped.`
-            : 'No photo locations added yet.';
-        if (missingCount) {
-            summary += ` ${missingCount} ${missingCount === 1 ? 'photo is' : 'photos are'} waiting for coordinates.`;
-        }
+        let summary = locatedPhotos.length ? '' : 'No photo locations added yet.';
         if (invalidPhotos.length) {
             summary += ` ${invalidPhotos.length} ${invalidPhotos.length === 1 ? 'entry has' : 'entries have'} invalid coordinates.`;
         }
-        this.status.textContent = summary;
+        this.status.textContent = summary.trim();
 
         this.map = new maplibregl.Map({
             container: 'photo-map',
@@ -215,7 +209,7 @@ class PhotoMap {
         this.map.addControl(new maplibregl.AttributionControl({ compact: false }), 'bottom-right');
         this.map.on('error', event => {
             console.error('Unable to load photo map data.', event.error);
-            this.status.textContent = `${summary} Map detail could not be loaded. Check your connection and retry.`;
+            this.status.textContent = `${summary} Map detail could not be loaded. Check your connection and retry.`.trim();
             this.retry.hidden = false;
         });
 
