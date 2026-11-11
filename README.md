@@ -12,6 +12,20 @@ A simple, elegant photography portfolio designed for GitHub Pages. Images are de
 
 You do **not** need an API key or secret for the public site: delivery URLs only use the cloud name and each image’s **public ID**. Use the API key and secret only for uploads or server-side tools, and never commit the secret to this repo.
 
+For Lightroom re-exports, put the dashboard-provided `CLOUDINARY_URL` in the ignored
+`.env` file. Preview the reconciled mapping first; add `--upload` only when ready
+to replace the matched Cloudinary assets:
+
+```bash
+python3 upload_cloudinary_reexports.py
+python3 upload_cloudinary_reexports.py --upload
+```
+
+The script reads JPG/JPEG files from the top level of the configured export
+folder, ignores the `uploaded` subfolder, preserves matched public IDs, and gives
+new files stable content-based IDs. Add the printed IDs for new files to
+`photos.js` with `coordinates: null` until their locations are known.
+
 ### 2. Upload photos
 
 Upload your images to the Cloudinary Media Library. Use a single folder (for example `fotos`) so each asset’s public ID looks like `fotos/your-image-name`. The entries in `photos.js` must match those public IDs exactly (including any file extension if Cloudinary stored one).
