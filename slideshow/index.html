@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <title>fotos slideshow</title>
+    <link rel="stylesheet" href="slideshow.css">
+</head>
+
+<body>
+    <main class="slideshow" aria-label="Photo slideshow">
+        <section class="photo-frame" aria-label="Current photo">
+            <img id="photo" alt="" decoding="async">
+        </section>
+        <p id="status" role="status" aria-live="polite"></p>
+        <nav class="controls" aria-label="Slideshow controls">
+            <button type="button" id="previous" aria-label="Previous photo" title="Previous photo">Previous</button>
+            <button type="button" id="toggle" aria-label="Pause slideshow" title="Pause slideshow">Pause</button>
+            <button type="button" id="next" aria-label="Next photo" title="Next photo">Next</button>
+            <button type="button" id="fullscreen" aria-label="Enter fullscreen"
+                title="Enter fullscreen">Fullscreen</button>
+        </nav>
+    </main>
+    <script src="../photos.js"></script>
+    <script src="slideshow.js"></script>
+</body>
+
+</html>

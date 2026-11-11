@@ -157,6 +157,10 @@ website/
 ├── script.js              # Gallery + Cloudinary URL helpers
 ├── map.js                 # On-demand MapLibre map + photo/lightbox integration
 ├── photos.js              # Cloud name + photo list, captions, optional coordinates
+├── slideshow/
+│   ├── index.html          # Standalone TV slideshow
+│   ├── slideshow.css
+│   └── slideshow.js
 ├── scripts/
 │   └── list-cloudinary-photos.mjs   # npm run list-cloudinary (needs .env)
 ├── package.json
