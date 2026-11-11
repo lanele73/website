@@ -2,7 +2,7 @@ const CLOUDINARY_THUMB_TRANSFORMS = 'f_auto,q_auto,w_1200,h_1400,c_limit';
 const CLOUDINARY_FULL_TRANSFORMS = 'f_auto,q_auto,w_2200,h_1600,c_limit';
 const PATCHWORK_MIN_ROW_SPAN = 10;
 const PATCHWORK_MAX_ROW_SPAN = 90;
-const SLIDESHOW_INTERVAL_MS = 10000;
+const SLIDESHOW_INTERVAL_MS = 15000;
 
 function getMinimumRowSpan(aspectRatio) {
     if (aspectRatio >= 2.6) {
@@ -332,7 +332,7 @@ class PhotoGallery {
     handleKeyboard(e) {
         if (!this.lightbox.classList.contains('active')) return;
 
-        switch(e.key) {
+        switch (e.key) {
             case 'Escape':
                 this.closeLightbox();
                 break;

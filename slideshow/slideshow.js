@@ -1,4 +1,4 @@
-const SLIDE_DURATION_MS = 10000;
+const SLIDE_DURATION_MS = 15000;
 const CONTROL_HIDE_DELAY_MS = 4000;
 const FULL_IMAGE_TRANSFORMS = 'f_auto,q_auto:good,w_3840,h_2160,c_limit';
 
@@ -14,6 +14,7 @@ let advanceTimer = null;
 let controlsTimer = null;
 let isPlaying = true;
 let preloadedImage = null;
+let displayRequest = 0;
 
 function buildPhotoUrl(publicId) {
     const encodedId = publicId
@@ -39,20 +40,35 @@ function formatPhotoAlt(photo) {
         .join(' \u2022 ');
 }
 
-function preloadNextPhoto() {
-    if (orderedPhotos.length < 2) {
-        return;
-    }
+function preloadPhoto(index) {
+    const photo = orderedPhotos[index];
+    const src = buildPhotoUrl(photo.publicId);
 
-    const nextPhoto = orderedPhotos[(currentIndex + 1) % orderedPhotos.length];
-    const nextSrc = buildPhotoUrl(nextPhoto.publicId);
-
-    if (preloadedImage?.src === nextSrc) {
-        return;
+    if (preloadedImage?.src === src) {
+        return preloadedImage;
     }
 
     preloadedImage = new Image();
-    preloadedImage.src = nextSrc;
+    preloadedImage.decoding = 'async';
+    preloadedImage.src = src;
+    return preloadedImage;
+}
+
+function preloadNextPhoto() {
+    if (orderedPhotos.length > 1) {
+        preloadPhoto((currentIndex + 1) % orderedPhotos.length);
+    }
+}
+
+function waitForImage(image) {
+    if (image.complete) {
+        return image.naturalWidth ? Promise.resolve() : Promise.reject(new Error('Image failed to load'));
+    }
+
+    return new Promise((resolve, reject) => {
+        image.addEventListener('load', resolve, { once: true });
+        image.addEventListener('error', reject, { once: true });
+    });
 }
 
 function clearAdvanceTimer() {
@@ -69,7 +85,7 @@ function scheduleNextPhoto() {
     }
 }
 
-function showPhoto(index) {
+async function showPhoto(index) {
     if (!orderedPhotos.length) {
         statusElement.textContent = 'No photos configured.';
         return;
@@ -77,20 +93,29 @@ function showPhoto(index) {
 
     currentIndex = (index + orderedPhotos.length) % orderedPhotos.length;
     const photo = orderedPhotos[currentIndex];
-    photoElement.alt = formatPhotoAlt(photo);
+    const request = ++displayRequest;
+    const image = preloadPhoto(currentIndex);
     statusElement.textContent = '';
-    photoElement.onload = () => {
+
+    try {
+        await waitForImage(image);
+        if (typeof image.decode === 'function') {
+            await image.decode();
+        }
+        if (request !== displayRequest) {
+            return;
+        }
+
+        photoElement.alt = formatPhotoAlt(photo);
+        photoElement.src = image.src;
         scheduleNextPhoto();
         preloadNextPhoto();
-    };
-    photoElement.onerror = () => {
+    } catch {
+        if (request !== displayRequest) {
+            return;
+        }
         statusElement.textContent = 'This photo could not be loaded.';
         scheduleNextPhoto();
-    };
-    photoElement.src = buildPhotoUrl(photo.publicId);
-    if (photoElement.complete && photoElement.naturalWidth) {
-        scheduleNextPhoto();
-        preloadNextPhoto();
     }
 }
 
