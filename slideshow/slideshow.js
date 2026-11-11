@@ -1,6 +1,6 @@
 const SLIDE_DURATION_MS = 10000;
 const CONTROL_HIDE_DELAY_MS = 4000;
-const FULL_IMAGE_TRANSFORMS = 'f_auto,q_auto:best,w_3840,h_2160,c_limit';
+const FULL_IMAGE_TRANSFORMS = 'f_auto,q_auto:good,w_3840,h_2160,c_limit';
 
 const photoElement = document.getElementById('photo');
 const statusElement = document.getElementById('status');
@@ -13,6 +13,7 @@ let currentIndex = 0;
 let advanceTimer = null;
 let controlsTimer = null;
 let isPlaying = true;
+let preloadedImage = null;
 
 function buildPhotoUrl(publicId) {
     const encodedId = publicId
@@ -36,6 +37,22 @@ function formatPhotoAlt(photo) {
         .map(part => part?.trim())
         .filter(Boolean)
         .join(' \u2022 ');
+}
+
+function preloadNextPhoto() {
+    if (orderedPhotos.length < 2) {
+        return;
+    }
+
+    const nextPhoto = orderedPhotos[(currentIndex + 1) % orderedPhotos.length];
+    const nextSrc = buildPhotoUrl(nextPhoto.publicId);
+
+    if (preloadedImage?.src === nextSrc) {
+        return;
+    }
+
+    preloadedImage = new Image();
+    preloadedImage.src = nextSrc;
 }
 
 function clearAdvanceTimer() {
@@ -62,7 +79,10 @@ function showPhoto(index) {
     const photo = orderedPhotos[currentIndex];
     photoElement.alt = formatPhotoAlt(photo);
     statusElement.textContent = '';
-    photoElement.onload = scheduleNextPhoto;
+    photoElement.onload = () => {
+        scheduleNextPhoto();
+        preloadNextPhoto();
+    };
     photoElement.onerror = () => {
         statusElement.textContent = 'This photo could not be loaded.';
         scheduleNextPhoto();
@@ -70,6 +90,7 @@ function showPhoto(index) {
     photoElement.src = buildPhotoUrl(photo.publicId);
     if (photoElement.complete && photoElement.naturalWidth) {
         scheduleNextPhoto();
+        preloadNextPhoto();
     }
 }
 
